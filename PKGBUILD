@@ -97,7 +97,7 @@ build() {
 
     cmake ${_cmakeopts[@]} .
 
-    make
+    make -j8
 }
 
 package() {
