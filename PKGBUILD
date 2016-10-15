@@ -11,13 +11,14 @@
 # Contributor: Tobias Powalowski <tpowa@archlinux.org>
 
 pkgname="opencv-git"
-pkgver=3.1.0.r1254.gd102ea9
+pkgver=3.1.0.r1522.g1ae27eb
 pkgrel=1
 pkgdesc="Open Source Computer Vision Library"
 url="http://opencv.org/"
 license=('BSD')
 arch=('i686' 'x86_64' 'armv7h' 'armv6h')
-depends=('gstreamer0.10-base' 'openexr'
+depends=(#'gstreamer0.10-base'
+         'openexr'
          'xine-lib' 'libdc1394' 'gtkglext'
          #'nvidia-utils' 'hdf5-cpp-fortran' # The following variables are used in this project, but they are set to NOTFOUND : CUDA_CUDA_LIBRARY, HDF5_hdf5_cpp_LIBRARY
          )
