@@ -39,11 +39,13 @@ changelog="ChangeLog"
 source=("${pkgname%-git}::git+http://github.com/Itseez/opencv.git"
         "${pkgname%-git}_contrib::git+https://github.com/opencv/opencv_contrib.git"
         'opencv_contrib_sfm_cmake.patch'
+        'opencv_gcc6_pch.patch'
         'fsh.patch'
     )
 md5sums=('SKIP'
          'SKIP'
          '6497098ac0f9d52e3c988f5413af22c8'
+         '9c69b76b8f1b781e201c70d21e3d175e'
          '752652494b42fd1532f52b789a85947f'
     )
 
@@ -98,6 +100,7 @@ pkgver() {
 
 prepare() {
     cd "${srcdir}/${pkgname%-git}"
+    patch -p1 -i "${srcdir}/opencv_gcc6_pch.patch"
 
     # hack-fix folder naming inconsistency that they won't fix
     # see http://code.opencv.org/issues/2512
