@@ -68,7 +68,8 @@ _cmakeopts=('-D WITH_OPENCL=ON'
             '-D ENABLE_FAST_MATH=ON'
             '-D CUDA_FAST_MATH=ON'
             '-D WITH_CUBLAS=ON'
-            #'-D CMAKE_CXX_FLAGS=-std=c++11' # '-D CMAKE_CXX_FLAGS=-std=c++98'
+            #'-D CMAKE_CXX_FLAGS=-std=c++11'
+            '-D CMAKE_CXX_FLAGS=-std=c++98'
             #'-D SFM_DEPS_OK=ON' # opencv_contrib sfm problem: https://github.com/opencv/opencv_contrib/issues/500
 # Settings for neural network module'
             '-D BUILD_opencv_dnn=ON'
@@ -113,8 +114,10 @@ prepare() {
 build() {
     cd "${srcdir}/${pkgname%-git}"
 
-    _cmakeopts+=("-D OPENCV_EXTRA_MODULES_PATH=$srcdir/${pkgname%-git}_contrib/modules")
-    cmake -D CUDA_NVCC_FLAGS='-std=c++11 -Xcompiler -D__CORRECT_ISO_CPP11_MATH_H_PROTO' ${_cmakeopts[@]} .
+    cmake ${_cmakeopts[@]} \
+        -D CUDA_NVCC_FLAGS='-std=c++11 -Xcompiler -D__CORRECT_ISO_CPP11_MATH_H_PROTO' \
+        -D OPENCV_EXTRA_MODULES_PATH=$srcdir/${pkgname%-git}_contrib/modules \
+        .
 
     make
 }
