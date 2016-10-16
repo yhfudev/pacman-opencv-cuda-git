@@ -24,7 +24,10 @@ depends=('gstreamer0.10-base' 'openexr'
 depends_x86_64=('intel-tbb')
 depends_i686=('intel-tbb')
 depends_armv7h=('intel-tbb')
-makedepends=('git' 'cmake' 'python2-numpy' 'python-numpy' 'mesa' 'eigen' 'cuda' 'libcl')
+makedepends=('git' 'cmake' 'python2-numpy' 'python-numpy' 'mesa' 'eigen'
+             'ceres-solver' # for opencv_contrib's sfm
+             'cuda' 'libcl'
+    )
 optdepends=('eigen'
             #'libcl: For coding with OpenCL'
             'python-numpy: Python 3 interface'
@@ -37,6 +40,7 @@ source=("${pkgname%-git}::git+http://github.com/Itseez/opencv.git"
         "${pkgname%-git}_contrib::git+https://github.com/opencv/opencv_contrib.git"
         'fsh.patch')
 md5sums=('SKIP'
+         'SKIP'
          '752652494b42fd1532f52b789a85947f')
 
 _cmakeopts=('-D WITH_OPENCL=ON'
@@ -60,7 +64,8 @@ _cmakeopts=('-D WITH_OPENCL=ON'
             '-D ENABLE_FAST_MATH=ON'
             '-D CUDA_FAST_MATH=ON'
             '-D WITH_CUBLAS=ON'
-            '-D CMAKE_CXX_FLAGS=-std=c++98'
+            '-D CMAKE_CXX_FLAGS=-std=c++11' # '-D CMAKE_CXX_FLAGS=-std=c++98'
+            '-D SFM_DEPS_OK=ON' # opencv_contrib sfm problem: https://github.com/opencv/opencv_contrib/issues/500
 # Settings for neural network module'
             '-D BUILD_opencv_dnn=ON'
             '-D BUILD_LIBPROTOBUF_FROM_SOURCES=ON'
