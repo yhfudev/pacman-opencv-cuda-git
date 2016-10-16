@@ -38,6 +38,7 @@ conflicts=("${pkgname%-git}")
 changelog="ChangeLog"
 source=("${pkgname%-git}::git+http://github.com/Itseez/opencv.git"
         "${pkgname%-git}_contrib::git+https://github.com/opencv/opencv_contrib.git"
+        "ippicv_linux_20151201.tgz::https://github.com/Itseez/opencv_3rdparty/raw/ippicv/master_20151201/ippicv/ippicv_linux_20151201.tgz"
         'opencv_contrib_sfm_cmake.patch'
         'opencv_gcc6_pch.patch'
         'fsh.patch'
@@ -109,6 +110,9 @@ prepare() {
     sed 's/OpenCV\/doc/doc\/opencv/' -i CMakeLists.txt
     sed 's/share\/OpenCV/share\/opencv/' -i CMakeLists.txt
     sed 's/share\/OpenCV/share\/opencv/' -i cmake/templates/opencv_run_all_tests_unix.sh.in
+
+    mkdir -p "${srcdir}/${pkgname%-git}/3rdparty/ippicv/downloads/linux-808b791a6eac9ed78d32a7666804320e/"
+    ln -s "${srcdir}/ippicv_linux_20151201.tgz" "${srcdir}/${pkgname%-git}/3rdparty/ippicv/downloads/linux-808b791a6eac9ed78d32a7666804320e/ippicv_linux_20151201.tgz"
 
     cd "${srcdir}/${pkgname%-git}_contrib"
     patch -p1 -i "${srcdir}/opencv_contrib_sfm_cmake.patch"
