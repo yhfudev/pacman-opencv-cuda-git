@@ -72,9 +72,7 @@ _cmakeopts=('-D WITH_OPENCL=ON'
             '-D ENABLE_FAST_MATH=ON'
             '-D CUDA_FAST_MATH=ON'
             '-D WITH_CUBLAS=ON'
-            #'-D CMAKE_CXX_FLAGS=-std=c++11'
-            '-D CMAKE_CXX_FLAGS=-std=c++98'
-            #'-D SFM_DEPS_OK=ON' # opencv_contrib sfm problem: https://github.com/opencv/opencv_contrib/issues/500
+            '-D CMAKE_CXX_FLAGS=-std=c++11' #'-D CMAKE_CXX_FLAGS=-std=c++98'; use c++11 because of the module sfm depends on ceres-solver which was compiled with c++11; see https://github.com/opencv/opencv_contrib/issues/500
 # Settings for neural network module'
             '-D BUILD_opencv_dnn=ON'
             '-D BUILD_LIBPROTOBUF_FROM_SOURCES=ON'
@@ -116,14 +114,15 @@ prepare() {
     ln -s "${srcdir}/ippicv_linux_20151201.tgz" "${srcdir}/${pkgname%-git}/3rdparty/ippicv/downloads/linux-808b791a6eac9ed78d32a7666804320e/ippicv_linux_20151201.tgz"
 
     cd "${srcdir}/${pkgname%-git}_contrib"
+    # opencv_contrib sfm problem, use the complete FindGflags.cmake from ceres-solver
     patch -p1 -i "${srcdir}/opencv_contrib_sfm_cmake.patch"
 }
 
 build() {
     cd "${srcdir}/${pkgname%-git}"
 
-    #-D CUDA_NVCC_FLAGS='-std=c++11 -Xcompiler -D__CORRECT_ISO_CPP11_MATH_H_PROTO'
     cmake ${_cmakeopts[@]} \
+        -D CUDA_NVCC_FLAGS='-std=c++11 -Xcompiler -D__CORRECT_ISO_CPP11_MATH_H_PROTO'
         -D OPENCV_EXTRA_MODULES_PATH=$srcdir/${pkgname%-git}_contrib/modules \
         .
 
