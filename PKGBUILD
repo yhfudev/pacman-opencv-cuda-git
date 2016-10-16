@@ -105,6 +105,9 @@ prepare() {
     sed 's/OpenCV\/doc/doc\/opencv/' -i CMakeLists.txt
     sed 's/share\/OpenCV/share\/opencv/' -i CMakeLists.txt
     sed 's/share\/OpenCV/share\/opencv/' -i cmake/templates/opencv_run_all_tests_unix.sh.in
+
+    cd "${srcdir}/${pkgname%-git}_contrib"
+    patch -p1 -i "${srcdir}/opencv_contrib_sfm_cmake.patch"
 }
 
 build() {
