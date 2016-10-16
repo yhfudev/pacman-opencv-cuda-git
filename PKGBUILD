@@ -20,6 +20,7 @@ arch=('i686' 'x86_64' 'armv7h' 'armv6h')
 depends=('gstreamer0.10-base' 'openexr'
          'xine-lib' 'libdc1394' 'gtkglext'
          'nvidia-utils' 'hdf5-cpp-fortran' # The following variables are used in this project, but they are set to NOTFOUND : CUDA_CUDA_LIBRARY, HDF5_hdf5_cpp_LIBRARY
+         'python'
          )
 depends_x86_64=('intel-tbb')
 depends_i686=('intel-tbb')
@@ -27,6 +28,7 @@ depends_armv7h=('intel-tbb')
 makedepends=('git' 'cmake' 'python2-numpy' 'python-numpy' 'mesa' 'eigen'
              'ceres-solver' # for opencv_contrib's sfm
              'cuda' 'libcl'
+             'gcc5'
     )
 optdepends=('eigen'
             #'libcl: For coding with OpenCL'
@@ -61,8 +63,8 @@ _cmakeopts=('-D WITH_OPENCL=ON'
             '-D BUILD_EXAMPLES=OFF'
             '-D INSTALL_C_EXAMPLES=OFF'
             '-D INSTALL_PYTHON_EXAMPLES=OFF'
-            '-DBUILD_opencv_python2=ON',
-            '-DBUILD_opencv_python3=ON',
+            '-D BUILD_opencv_python2=ON',
+            '-D BUILD_opencv_python3=ON',
             '-D CMAKE_BUILD_TYPE=Release'
             '-D CMAKE_INSTALL_PREFIX=/usr'
             '-D CMAKE_SKIP_RPATH=ON'
@@ -72,7 +74,7 @@ _cmakeopts=('-D WITH_OPENCL=ON'
             '-D ENABLE_FAST_MATH=ON'
             '-D CUDA_FAST_MATH=ON'
             '-D WITH_CUBLAS=ON'
-            '-D CMAKE_CXX_FLAGS=-std=c++11' #'-D CMAKE_CXX_FLAGS=-std=c++98'; use c++11 because of the module sfm depends on ceres-solver which was compiled with c++11; see https://github.com/opencv/opencv_contrib/issues/500
+            '-D CMAKE_CXX_FLAGS=-std=c++11' #'-D CMAKE_CXX_FLAGS=-std=c++98'; use c++11 because the module sfm depends on ceres-solver which was compiled with c++11; see https://github.com/opencv/opencv_contrib/issues/500
 # Settings for neural network module'
             '-D BUILD_opencv_dnn=ON'
             '-D BUILD_LIBPROTOBUF_FROM_SOURCES=ON'
@@ -111,18 +113,27 @@ prepare() {
     sed 's/share\/OpenCV/share\/opencv/' -i cmake/templates/opencv_run_all_tests_unix.sh.in
 
     mkdir -p "${srcdir}/${pkgname%-git}/3rdparty/ippicv/downloads/linux-808b791a6eac9ed78d32a7666804320e/"
-    ln -s "${srcdir}/ippicv_linux_20151201.tgz" "${srcdir}/${pkgname%-git}/3rdparty/ippicv/downloads/linux-808b791a6eac9ed78d32a7666804320e/ippicv_linux_20151201.tgz"
+    ln -sf "${srcdir}/ippicv_linux_20151201.tgz" "${srcdir}/${pkgname%-git}/3rdparty/ippicv/downloads/linux-808b791a6eac9ed78d32a7666804320e/ippicv_linux_20151201.tgz"
 
     cd "${srcdir}/${pkgname%-git}_contrib"
     # opencv_contrib sfm problem, use the complete FindGflags.cmake from ceres-solver
     patch -p1 -i "${srcdir}/opencv_contrib_sfm_cmake.patch"
+
+    #sudo ln -sf /usr/bin/gcc-5 /opt/cuda/bin/gcc
+    #sudo ln -sf /usr/bin/cpp-5 /opt/cuda/bin/cpp
+    #sudo ln -sf /usr/bin/g++-5 /opt/cuda/bin/g++
 }
 
 build() {
     cd "${srcdir}/${pkgname%-git}"
 
+    # --expt-relaxed-constexpr to fix the error:
+    #    opencv/modules/core/include/opencv2/core/cuda/vec_math.hpp(205): error: calling a constexpr __host__ function("abs") from a __device__ function("abs") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
+    # current nvcc don't support gcc6, so use gcc5 instead
+    export CC=$(which gcc-5)
+    export CXX=$(which g++-5)
     cmake ${_cmakeopts[@]} \
-        -D CUDA_NVCC_FLAGS='-std=c++11 -Xcompiler -D__CORRECT_ISO_CPP11_MATH_H_PROTO'
+        -D CUDA_NVCC_FLAGS='-std=c++11 -Xcompiler -D__CORRECT_ISO_CPP11_MATH_H_PROTO --expt-relaxed-constexpr' \
         -D OPENCV_EXTRA_MODULES_PATH=$srcdir/${pkgname%-git}_contrib/modules \
         .
 
