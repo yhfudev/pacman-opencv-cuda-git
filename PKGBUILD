@@ -38,10 +38,14 @@ conflicts=("${pkgname%-git}")
 changelog="ChangeLog"
 source=("${pkgname%-git}::git+http://github.com/Itseez/opencv.git"
         "${pkgname%-git}_contrib::git+https://github.com/opencv/opencv_contrib.git"
-        'fsh.patch')
+        'opencv_contrib_sfm_cmake.patch'
+        'fsh.patch'
+    )
 md5sums=('SKIP'
          'SKIP'
-         '752652494b42fd1532f52b789a85947f')
+         '6497098ac0f9d52e3c988f5413af22c8'
+         '752652494b42fd1532f52b789a85947f'
+    )
 
 _cmakeopts=('-D WITH_OPENCL=ON'
             '-D WITH_OPENGL=ON'
