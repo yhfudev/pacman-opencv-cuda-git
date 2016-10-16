@@ -45,6 +45,7 @@ source=("${pkgname%-git}::git+http://github.com/Itseez/opencv.git"
     )
 md5sums=('SKIP'
          'SKIP'
+         '808b791a6eac9ed78d32a7666804320e'
          '6497098ac0f9d52e3c988f5413af22c8'
          '9c69b76b8f1b781e201c70d21e3d175e'
          '752652494b42fd1532f52b789a85947f'
