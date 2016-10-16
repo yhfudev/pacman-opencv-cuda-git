@@ -13,7 +13,7 @@
 pkgname="opencv-git"
 pkgver=3.1.0.r1522.g1ae27eb
 pkgrel=1
-pkgdesc="Open Source Computer Vision Library"
+pkgdesc="Open Source Computer Vision Library compiled with extra modules(opencv_contrib) and CUDA"
 url="http://opencv.org/"
 license=('BSD')
 arch=('i686' 'x86_64' 'armv7h' 'armv6h')
@@ -24,9 +24,9 @@ depends=('gstreamer0.10-base' 'openexr'
 depends_x86_64=('intel-tbb')
 depends_i686=('intel-tbb')
 depends_armv7h=('intel-tbb')
-makedepends=('git' 'cmake' 'python2-numpy' 'python-numpy' 'mesa' 'eigen' 'cuda')
+makedepends=('git' 'cmake' 'python2-numpy' 'python-numpy' 'mesa' 'eigen' 'cuda' 'libcl')
 optdepends=('eigen'
-            'libcl: For coding with OpenCL'
+            #'libcl: For coding with OpenCL'
             'python-numpy: Python 3 interface'
             'python2-numpy: Python 2 interface')
 options=('staticlibs')
@@ -34,6 +34,7 @@ provides=("${pkgname%-git}")
 conflicts=("${pkgname%-git}")
 changelog="ChangeLog"
 source=("${pkgname%-git}::git+http://github.com/Itseez/opencv.git"
+        "${pkgname%-git}_contrib::git+https://github.com/opencv/opencv_contrib.git"
         'fsh.patch')
 md5sums=('SKIP'
          '752652494b42fd1532f52b789a85947f')
@@ -48,6 +49,8 @@ _cmakeopts=('-D WITH_OPENCL=ON'
             '-D BUILD_EXAMPLES=OFF'
             '-D INSTALL_C_EXAMPLES=OFF'
             '-D INSTALL_PYTHON_EXAMPLES=OFF'
+            '-DBUILD_opencv_python2=ON',
+            '-DBUILD_opencv_python3=ON',
             '-D CMAKE_BUILD_TYPE=Release'
             '-D CMAKE_INSTALL_PREFIX=/usr'
             '-D CMAKE_SKIP_RPATH=ON'
@@ -58,6 +61,9 @@ _cmakeopts=('-D WITH_OPENCL=ON'
             '-D CUDA_FAST_MATH=ON'
             '-D WITH_CUBLAS=ON'
             '-D CMAKE_CXX_FLAGS=-std=c++98'
+# Settings for neural network module'
+            '-D BUILD_opencv_dnn=ON'
+            '-D BUILD_LIBPROTOBUF_FROM_SOURCES=ON'
     )
 
 # SSE only available from Pentium 3 onwards (i686 is way older)
@@ -95,9 +101,10 @@ prepare() {
 build() {
     cd "${srcdir}/${pkgname%-git}"
 
+    _cmakeopts+=("-D OPENCV_EXTRA_MODULES_PATH=$srcdir/${pkgname%-git}_contrib/modules")
     cmake ${_cmakeopts[@]} .
 
-    make -j8
+    make
 }
 
 package() {
