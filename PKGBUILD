@@ -21,16 +21,17 @@ depends=('gstreamer0.10-base' 'openexr'
          'xine-lib' 'libdc1394' 'gtkglext'
          'nvidia-utils' 'hdf5-cpp-fortran' # The following variables are used in this project, but they are set to NOTFOUND : CUDA_CUDA_LIBRARY, HDF5_hdf5_cpp_LIBRARY
          'python'
+         'eigen'
+         'ceres-solver' # for opencv_contrib's sfm
+         'cuda' 'libcl'
          )
 depends_x86_64=('intel-tbb')
 depends_i686=('intel-tbb')
 depends_armv7h=('intel-tbb')
-makedepends=('git' 'cmake' 'python2-numpy' 'python-numpy' 'mesa' 'eigen'
-             'ceres-solver' # for opencv_contrib's sfm
-             'cuda' 'libcl'
+makedepends=('git' 'cmake' 'python2-numpy' 'python-numpy' 'mesa'
              'gcc5'
     )
-optdepends=('eigen'
+optdepends=(#'eigen'
             #'libcl: For coding with OpenCL'
             'python-numpy: Python 3 interface'
             'python2-numpy: Python 2 interface')
